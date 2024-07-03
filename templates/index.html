@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Maze Solver</title>
+    <script>
+        function generateMaze() {
+            let n = parseInt(document.getElementById('n').value);
+            let m = parseInt(document.getElementById('m').value);
+            let k = parseInt(document.getElementById('k').value);
+            let maze = new Array(n);
+            for (let i = 0; i < n; i++) {
+                maze[i] = new Array(m);
+                for (let j = 0; j < m; j++) {
+                    maze[i][j] = new Array(k).fill(0).map(() => Math.round(Math.random()));
+                }
+            }
+            document.getElementById('maze').value = JSON.stringify(maze);
+        }
+
+        function solveMaze() {
+            let maze = JSON.parse(document.getElementById('maze').value);
+            let start = JSON.parse(document.getElementById('start').value);
+            let stop = JSON.parse(document.getElementById('stop').value);
+            fetch('/solve_maze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ maze, start, stop }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = JSON.stringify(data.path);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Maze Solver</h1>
+    <div>
+        <label>N: <input type="number" id="n" value="3"></label>
+        <label>M: <input type="number" id="m" value="3"></label>
+        <label>K: <input type="number" id="k" value="3"></label>
+        <button onclick="generateMaze()">Generate Maze</button>
+    </div>
+    <div>
+        <label>Start: <input type="text" id="start" value="[0,0,0]"></label>
+        <label>Stop: <input type="text" id="stop" value="[1,2,2]"></label>
+    </div>
+    <div>
+        <label>Maze: <textarea id="maze" rows="10" cols="50"></textarea></label>
+    </div>
+    <button onclick="solveMaze()">Solve Maze</button>
+    <div id="result"></div>
+</body>
+
+</html>
