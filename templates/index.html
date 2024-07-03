@@ -4,6 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Maze Solver</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 20px;
+            padding: 20px;
+        }
+    </style>
     <script>
         function generateMaze() {
             let n = parseInt(document.getElementById('n').value);
@@ -43,21 +50,23 @@
 
 <body>
     <h1>Maze Solver</h1>
-    <div>
-        <label>N: <input type="number" id="n" value="3"></label>
-        <label>M: <input type="number" id="m" value="3"></label>
-        <label>K: <input type="number" id="k" value="3"></label>
-        <button onclick="generateMaze()">Generate Maze</button>
+    <div class="form-group">
+        <label>N (Depth): <input type="number" id="n" value="3" class="form-control"></label>
+        <label>M (Rows): <input type="number" id="m" value="3" class="form-control"></label>
+        <label>K (Columns): <input type="number" id="k" value="3" class="form-control"></label>
+        <button onclick="generateMaze()" class="btn btn-primary">Generate Maze</button>
     </div>
-    <div>
-        <label>Start: <input type="text" id="start" value="[0,0,0]"></label>
-        <label>Stop: <input type="text" id="stop" value="[1,2,2]"></label>
+    <div  class="form-group">
+        <label>Start: <input type="text" id="start" value="[0,0,0]" class="form-control"></label>
     </div>
-    <div>
-        <label>Maze: <textarea id="maze" rows="10" cols="50"></textarea></label>
+    <div class="form-group">
+        <label>Stop: <input type="text" id="stop" value="[1,2,2]" class="form-control"></label>
     </div>
-    <button onclick="solveMaze()">Solve Maze</button>
-    <div id="result"></div>
+    <div class="form-group">
+        <label>Maze: <textarea id="maze" rows="10" cols="50" class="form-control"></textarea></label>
+    </div>
+    <button onclick="solveMaze()"  class="btn btn-success">Solve Maze</button>
+    <div id="result" class="mt-3"></div>
 </body>
 
 </html>
