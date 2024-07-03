@@ -12,10 +12,19 @@
         }
     </style>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('generateMazeBtn').addEventListener('click', generateMaze);
+            document.getElementById('solveMazeBtn').addEventListener('click', solveMaze);
+        });
+
         function generateMaze() {
             let n = parseInt(document.getElementById('n').value);
             let m = parseInt(document.getElementById('m').value);
             let k = parseInt(document.getElementById('k').value);
+            if (isNaN(n) || isNaN(m) || isNaN(k) || n <= 0 || m <= 0 || k <= 0) {
+                alert('Please enter valid positive numbers for N, M, and K.');
+                return;
+            }
             let maze = new Array(n);
             for (let i = 0; i < n; i++) {
                 maze[i] = new Array(m);
@@ -27,22 +36,31 @@
         }
 
         function solveMaze() {
-            let maze = JSON.parse(document.getElementById('maze').value);
-            let start = JSON.parse(document.getElementById('start').value);
-            let stop = JSON.parse(document.getElementById('stop').value);
+            let maze = document.getElementById('maze').value;
+            if (!maze) {
+                alert('Please generate a maze first.');
+                return;
+            }
+            let start = document.getElementById('start').value;
+            let stop = document.getElementById('stop').value;
+            document.getElementById('result').textContent = 'Solving...';
             fetch('/solve_maze', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ maze, start, stop }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ maze: JSON.parse(maze), start: JSON.parse(start), stop: JSON.parse(stop) }),
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     document.getElementById('result').textContent = JSON.stringify(data.path);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
+                    document.getElementById('result').textContent = 'Failed to solve maze. Please try again.';
                 });
         }
     </script>
@@ -52,11 +70,15 @@
     <h1>Maze Solver</h1>
     <div class="form-group">
         <label>N (Depth): <input type="number" id="n" value="3" class="form-control"></label>
-        <label>M (Rows): <input type="number" id="m" value="3" class="form-control"></label>
-        <label>K (Columns): <input type="number" id="k" value="3" class="form-control"></label>
-        <button onclick="generateMaze()" class="btn btn-primary">Generate Maze</button>
     </div>
-    <div  class="form-group">
+    <div class="form-group">
+        <label>M (Rows): <input type="number" id="m" value="3" class="form-control"></label>
+    </div>
+    <div class="form-group">
+        <label>K (Columns): <input type="number" id="k" value="3" class="form-control"></label>
+    </div>
+    <button id="generateMazeBtn" class="btn btn-primary">Generate Maze</button>
+    <div class="form-group">
         <label>Start: <input type="text" id="start" value="[0,0,0]" class="form-control"></label>
     </div>
     <div class="form-group">
@@ -65,7 +87,7 @@
     <div class="form-group">
         <label>Maze: <textarea id="maze" rows="10" cols="50" class="form-control"></textarea></label>
     </div>
-    <button onclick="solveMaze()"  class="btn btn-success">Solve Maze</button>
+    <button id="solveMazeBtn" class="btn btn-success">Solve Maze</button>
     <div id="result" class="mt-3"></div>
 </body>
 
