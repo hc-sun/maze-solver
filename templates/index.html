@@ -5,12 +5,20 @@
     <meta charset="UTF-8">
     <title>Maze Solver</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <style>
         body {
             margin: 20px;
             padding: 20px;
         }
+
+        #mazeContainer {
+            width: 600px;
+            height: 400px;
+        }
     </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('generateMazeBtn').addEventListener('click', generateMaze);
@@ -33,6 +41,39 @@
                 }
             }
             document.getElementById('maze').value = JSON.stringify(maze);
+            displayMaze(maze);
+        }
+
+        function displayMaze(maze) {
+            let scene = new THREE.Scene();
+            let camera = new THREE.PerspectiveCamera(75, 600 / 400, 0.1, 1000);
+            let renderer = new THREE.WebGLRenderer();
+            renderer.setSize(600, 400);
+            document.getElementById('mazeContainer').innerHTML = "";
+            document.getElementById('mazeContainer').appendChild(renderer.domElement);
+
+            let geometry = new THREE.BoxGeometry();
+            let material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+            maze.forEach((layer, n) => {
+                layer.forEach((row, m) => {
+                    row.forEach((cell, k) => {
+                        if (cell === 1) {
+                            let cube = new THREE.Mesh(geometry, material);
+                            cube.position.set(n - maze.length / 2, m - layer.length / 2, k - row.length / 2);
+                            scene.add(cube);
+                        }
+                    });
+                });
+            });
+
+            camera.position.z = Math.max(maze.length, maze[0].length, maze[0][0].length);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+            animate();
         }
 
         function solveMaze() {
@@ -89,6 +130,8 @@
     </div>
     <button id="solveMazeBtn" class="btn btn-success">Solve Maze</button>
     <div id="result" class="mt-3"></div>
+    <div id="mazeContainer"></div>
+
 </body>
 
 </html>
