@@ -88,6 +88,14 @@
             camera.updateProjectionMatrix();
 
 
+            window.addEventListener('resize', function () {
+                const width = mazeContainer.clientWidth;
+                const height = mazeContainer.clientHeight;
+                renderer.setSize(width, height);
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+            });
+
             // Create cubes for maze walls
             let geometry = new THREE.BoxGeometry();
             let material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
