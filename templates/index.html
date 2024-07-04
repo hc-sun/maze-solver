@@ -148,7 +148,11 @@
                     return response.json();
                 })
                 .then(data => {
-                    document.getElementById('result').textContent = JSON.stringify(data.path);
+                    if (data.path.length === 0) {
+                        document.getElementById('result').textContent = 'Unable to solve this maze, please try again.';
+                    } else {
+                        document.getElementById('result').textContent = JSON.stringify(data.path);
+                    }
                 })
                 .catch((error) => {
                     console.error('Error:', error);
