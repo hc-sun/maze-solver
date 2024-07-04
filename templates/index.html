@@ -15,13 +15,28 @@
     </script>
     <style>
         body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             margin: 20px;
             padding: 20px;
         }
 
+        #controls {
+            margin-bottom: 20px;
+        }
+
         #mazeContainer {
-            width: 400px;
-            height: 400px;
+            width: 80%;
+            height: 500px;
+            border: 1px solid #ccc;
+        }
+
+        @media (max-width: 768px) {
+            #mazeContainer {
+                width: 100%;
+                height: 300px;
+            }
         }
     </style>
 
