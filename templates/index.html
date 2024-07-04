@@ -5,8 +5,14 @@
     <meta charset="UTF-8">
     <title>Maze Solver</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.138.0/build/three.module.js",
+                "OrbitControls": "https://unpkg.com/three@0.138.0/examples/jsm/controls/OrbitControls.js"
+            }
+        }
+    </script>
     <style>
         body {
             margin: 20px;
@@ -14,16 +20,20 @@
         }
 
         #mazeContainer {
-            width: 600px;
+            width: 400px;
             height: 400px;
         }
     </style>
 
-    <script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'OrbitControls';
+
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('generateMazeBtn').addEventListener('click', generateMaze);
             document.getElementById('solveMazeBtn').addEventListener('click', solveMaze);
         });
+
 
         function generateMaze() {
             let n = parseInt(document.getElementById('n').value);
@@ -46,12 +56,12 @@
 
         function displayMaze(maze) {
             let scene = new THREE.Scene();
-            let camera = new THREE.PerspectiveCamera(75, 600 / 400, 0.1, 1000);
+            let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             let renderer = new THREE.WebGLRenderer();
-            renderer.setSize(600, 400);
-            document.getElementById('mazeContainer').innerHTML = "";
-            document.getElementById('mazeContainer').appendChild(renderer.domElement);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
 
+            // Create cubes for maze walls
             let geometry = new THREE.BoxGeometry();
             let material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
@@ -67,10 +77,16 @@
                 });
             });
 
-            camera.position.z = Math.max(maze.length, maze[0].length, maze[0][0].length);
+            camera.position.z = 5;
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.enableZoom = true;
 
             function animate() {
                 requestAnimationFrame(animate);
+                controls.update();
                 renderer.render(scene, camera);
             }
             animate();
