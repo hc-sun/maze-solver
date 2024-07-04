@@ -27,7 +27,7 @@
         }
 
         #mazeContainer {
-            width: 80%;
+            width: 60%;
             height: 500px;
             border: 1px solid #ccc;
         }
@@ -72,9 +72,21 @@
         function displayMaze(maze) {
             let scene = new THREE.Scene();
             let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            const mazeContainer = document.getElementById('mazeContainer');
+            const width = mazeContainer.clientWidth;
+            const height = mazeContainer.clientHeight;
+
+
             let renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
+            // Set renderer size to match the container's size
+            renderer.setSize(width, height);
+            mazeContainer.innerHTML = "";
+            mazeContainer.appendChild(renderer.domElement);
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+
 
             // Create cubes for maze walls
             let geometry = new THREE.BoxGeometry();
