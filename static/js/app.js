@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'OrbitControls';
 
+let scene;
+
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('generateMazeBtn').addEventListener('click', generateMaze);
     document.getElementById('solveMazeBtn').addEventListener('click', solveMaze);
@@ -27,7 +29,7 @@ function generateMaze() {
 }
 
 function displayMaze(maze) {
-    let scene = new THREE.Scene();
+    scene = new THREE.Scene();
     let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
     const mazeContainer = document.getElementById('mazeContainer');
@@ -109,10 +111,27 @@ function solveMaze() {
                 document.getElementById('result').textContent = 'Unable to solve this maze, please try again.';
             } else {
                 document.getElementById('result').textContent = JSON.stringify(data.path);
+                displaySolutionPath(data.path);
             }
         })
         .catch((error) => {
             console.error('Error:', error);
             document.getElementById('result').textContent = 'Failed to solve maze. Please try again.';
         });
+}
+
+function displaySolutionPath(path) {
+    let geometry = new THREE.BoxGeometry();
+    let material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+
+    let maze = JSON.parse(document.getElementById('maze').value);
+    let nOffset = maze.length / 2;
+    let mOffset = maze[0].length / 2;
+    let kOffset = maze[0][0].length / 2;
+
+    path.forEach((position) => {
+        let cube = new THREE.Mesh(geometry, material);
+        cube.position.set(position[0] - nOffset, position[1] - mOffset, position[2] - kOffset);
+        scene.add(cube);
+    });
 }
