@@ -94,11 +94,37 @@ function solveMaze() {
     }
     let start = document.getElementById('start').value;
     let stop = document.getElementById('stop').value;
+
+    if (!start || !stop) {
+        alert('Please enter both start and stop positions.');
+        return;
+    }
+
+    try {
+        start = JSON.parse(start);
+        stop = JSON.parse(stop);
+    } catch (e) {
+        alert('Start and stop positions must be in array format, e.g., [0,0,0].');
+        return;
+    }
+
+    if (!Array.isArray(start) || !Array.isArray(stop) || start.length !== 3 || stop.length !== 3) {
+        alert('Start and stop positions must be arrays of three numbers.');
+        return;
+    }
+
+    // Validate start and stop positions are within maze bounds
+    maze = JSON.parse(maze);
+    if (!isPositionValid(start, maze) || !isPositionValid(stop, maze)) {
+        alert('Start or stop position is out of maze bounds.');
+        return;
+    }
+
     document.getElementById('result').textContent = 'Solving...';
     fetch('/solve_maze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ maze: JSON.parse(maze), start: JSON.parse(start), stop: JSON.parse(stop) }),
+        body: JSON.stringify({ maze: maze, start: start, stop: stop }),
     })
         .then(response => {
             if (!response.ok) {
@@ -118,6 +144,12 @@ function solveMaze() {
             console.error('Error:', error);
             document.getElementById('result').textContent = 'Failed to solve maze. Please try again.';
         });
+}
+
+function isPositionValid(position, maze) {
+    return position.every((val, index) => {
+        return Number.isInteger(val) && val >= 0 && (index === 0 ? val < maze.length : index === 1 ? val < maze[0].length : val < maze[0][0].length);
+    });
 }
 
 function displaySolutionPath(path) {
